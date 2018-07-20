@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="/public/react-playing-cards/main.css"/>
+		<style>
+			html,body{
+				margin:0px;
+				padding:0px;
+			}
+			.game{
+				clear:both;
+				width:100vw;
+				height:100vh;
+				display: flex;
+				flex-direction: column;
+				background:green;
+			}
+			.table{
+				flex:1;
+				position:relative;
+			}
+			.hand{
+				margin:auto;
+				text-align: center;
+				display: inline-block;
+				padding-bottom: 50px;
+			}
+
+			.field{
+				width: 400px;
+				height: 400px;
+
+				position:absolute; /*it can be fixed too*/
+				left:0; right:0;
+				top:0; bottom:0;
+				margin:auto;
+
+				/*this to solve "the content will not be cut when the window is smaller than the content": */
+				max-width:100%;
+				max-height:100%;
+				overflow:hidden;
+			}
+			.field .card{
+				margin-left: 0px;
+			}
+
+			.card.north{
+				position: absolute;
+				top:0px;
+				left:130px;
+			}
+			.card.east{
+				position: absolute;
+				top:90px;
+				left:260px;
+			}
+			.card.south{
+				position: absolute;
+				top:180px;
+				left:130px;
+			}
+			.card.west{
+				position: absolute;
+				top:90px;
+				left:0px;
+			}
+
+			.card{
+				margin-left:-50px;
+				width:128px;
+				height:180px;
+				display: inline-block;
+			}
+			.card:first-child{
+				margin-left:0px;
+			}
+
+			.card .rpc__card{
+				transform:scale(0.5);
+				transform-origin: top left;
+			}
+
+			.card .rpc__card:hover{
+				background-color:#eee;
+			}
+			.card.active{
+				margin-top:-30px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script src="/client.js"></script>
+	</body>
+</html>
