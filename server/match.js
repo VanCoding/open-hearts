@@ -1,9 +1,11 @@
+var EventEmitter = require("events").EventEmitter;
 var allCards = require("./cards");
 
 var beginningCard = allCards.filter(c=>c.color=="club"&&c.kind=="2")[0];
 
-module.exports = class Match{
+module.exports = class Match extends EventEmitter{
 	constructor(){
+		super();
 		this.cards = allCards.slice();
 		this.players = [
 			{},
@@ -154,6 +156,7 @@ module.exports = class Match{
 		this.players[seat].connection = connection;
 		connection.on("close",()=>{
 			delete this.players[seat].connection;
+			if(!this.players.filter(p=>p.connection).length) this.emit("close");
 		})
 		connection.on("message",msg=>{
 			try{

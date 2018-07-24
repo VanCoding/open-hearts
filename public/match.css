@@ -1,0 +1,62 @@
+html,body{
+	margin:0px;
+	padding:0px;
+}
+.game{
+	clear:both;
+	width:100vw;
+	height:100vh;
+	display: flex;
+	flex-direction: column;
+	background:green;
+}
+.table{
+	flex:1;
+	position:relative;
+	text-align: center;
+}
+.hand{
+	margin:auto;
+	text-align: center;
+	display: inline-block;
+	padding-bottom: 50px;
+	padding-top:50px;
+	overflow: hidden;
+}
+.player{
+	height:200;
+	width:200px;
+	text-align: center;
+	display: inline-block;
+	vertical-align: top;
+}
+.player h1{
+	color:white;
+	font-family: sans-serif;
+}
+.player.active h1{
+	color:yellow;
+}
+
+.card{
+	margin-left:-50px;
+	width:128px;
+	height:180px;
+	display: inline-block;
+}
+.card:first-child{
+	margin-left:0px;
+}
+
+.card .rpc__card{
+	transform:scale(0.5);
+	transform-origin: top left;
+}
+
+.card .rpc__card:hover{
+	background-color:#eee;
+}
+.card.active{
+	position: relative;
+	top:-30px;
+}

@@ -25,37 +25,35 @@ var rankMap = {
 	"ace":"A"
 }
 
-module.exports = class Game extends react.Component{
-	constructor(){
-		super();
-		this.client = new Client();
+module.exports = class Match extends react.Component{
+	constructor(p){
+		super(p);
+		this.client = new Client(this.props.id);
 		this.client.on("change",()=>this.forceUpdate());
 		this.selectedCards = [];
 	}
 	render(){
 		return react.createElement("div",{className:"game"},
-			react.createElement("div",{className:"table"},
-				react.createElement("div",{className:"field"},new Array(this.client.players).fill(0).map((v,i)=>{
-					return react.createElement("div",{className:"player"+(i==(this.client.currentRound&&(this.client.currentRound.startedBy+this.client.currentRound.cards.length)%this.client.players)?" active":"")},
-						(()=>{
-							var games = this.client.games||[];
-							var matchPoints = this.client.calculatePoints(games.slice(0,games.length-1));
-							var gamePoints = this.client.calculatePoints(games.slice(games.length-1));
-							return react.createElement("h1",{},
-								i==this.client.seat?"Ich":"Spieler "+(i+1),
-								react.createElement("br"),
-								matchPoints[i]+" ("+gamePoints[i]+")");
-						})(),
-						(()=>{
-							var card = this.client.currentRound && this.client.currentRound.cards[(this.client.players+i-this.client.currentRound.startedBy)%this.client.players];
-							if(!card) return null;
-							return react.createElement("div",{class:"card"},
-								react.createElement(Card,{suit:suitMap[card.color],rank:rankMap[card.kind]})
-							)
-						})()
-					)
-				}))
-			),
+			react.createElement("div",{className:"table"},new Array(this.client.players).fill(0).map((v,i)=>{
+				return react.createElement("div",{className:"player"+(i==(this.client.currentRound&&(this.client.currentRound.startedBy+this.client.currentRound.cards.length)%this.client.players)?" active":"")},
+					(()=>{
+						var games = this.client.games||[];
+						var matchPoints = this.client.calculatePoints(games.slice(0,games.length-1));
+						var gamePoints = this.client.calculatePoints(games.slice(games.length-1));
+						return react.createElement("h1",{},
+							i==this.client.seat?"Ich":"Spieler "+(i+1),
+							react.createElement("br"),
+							matchPoints[i]+" ("+gamePoints[i]+")");
+					})(),
+					(()=>{
+						var card = this.client.currentRound && this.client.currentRound.cards[(this.client.players+i-this.client.currentRound.startedBy)%this.client.players];
+						if(!card) return null;
+						return react.createElement("div",{class:"card"},
+							react.createElement(Card,{suit:suitMap[card.color],rank:rankMap[card.kind]})
+						)
+					})()
+				)
+			})),
 			this.client.connected?react.createElement("div",{className:"hand"},this.sortCards(this.client.cards).map(c=>
 				react.createElement("div",{className:"card"+(this.selectedCards.includes(c)?" active":""),onClick:this.clickCard.bind(this,c)},
 					react.createElement(Card,{suit:suitMap[c.color],rank:rankMap[c.kind]})

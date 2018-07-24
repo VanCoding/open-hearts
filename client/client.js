@@ -2,10 +2,10 @@ var EventEmitter = require("events").EventEmitter;
 var allCards = require("../server/cards");
 
 module.exports = class HeartsClient extends EventEmitter{
-	constructor(){
+	constructor(id){
 		super();
 		this.connected = false;
-		this.connection = new WebSocket("ws://localhost/connect");
+		this.connection = new WebSocket((location.protocol=="https:"?"wss":"ws")+"://"+location.hostname+"/api/matches/"+id);
 		this.connection.onmessage = msg=>{
 			var data = JSON.parse(msg.data);
 			switch(data.event){
@@ -23,20 +23,17 @@ module.exports = class HeartsClient extends EventEmitter{
 				case "newGame":
 					this.stage = "passing";
 					this.cards = data.cards;
-					this.games = [this.currentGame = {
-						rounds:[this.currentRound = {
-							startedBy:null,
-							cards:[],
-							wonBy:null
-						}]
-					}];
+					this.games.push(this.currentGame = {
+						rounds:[]
+					})
 					this.emit("change");
 					break;
 				case "exchangedCards":
 					this.cards = data.cards;
 					this.stage = "playing";
-					this.currentRound = {startedBy:data.startedBy,cards:[],wonBy:null};
-					this.currentGame.rounds.push(this.currentRound);
+					this.currentGame.rounds.push(this.currentRound = {
+						startedBy:data.startedBy,cards:[],wonBy:null
+					});
 					this.emit("change");
 					break;
 				case "playedCard":
@@ -61,14 +58,12 @@ module.exports = class HeartsClient extends EventEmitter{
 								this.stage = "over";
 							}
 						}else{
-							this.currentRound = {
+							this.currentGame.rounds.push(this.currentRound = {
 								startedBy:this.currentRound.wonBy,
 								cards:[],
 								wonBy:null
-							};
-							this.currentGame.rounds.push(this.currentRound);
+							});
 						}
-						console.log(this)
 					}
 					this.emit("change");
 					break;
