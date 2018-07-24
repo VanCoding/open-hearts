@@ -11,7 +11,7 @@ var Match = require("./match");
 
 var match = new Match();
 
-var build = browserify({cache:{},packageCache:{},entries:[path.resolve(__dirname,"../client/index.js")],plugins:[watchify]});
+var build = browserify({cache:{},packageCache:{},entries:[path.resolve(__dirname,"../client/index.js")],plugin:[watchify]});
 var client = "";
 
 function bundle(){

@@ -35,11 +35,26 @@ module.exports = class Game extends react.Component{
 	render(){
 		return react.createElement("div",{className:"game"},
 			react.createElement("div",{className:"table"},
-				this.client.currentRound?react.createElement("div",{className:"field"},this.client.currentRound.cards.map((c,i)=>
-					react.createElement("div",{className:"card "+["south","west","north","east"][(this.client.currentRound.startedBy+i+this.client.players-this.client.seat-1)%this.client.players]},
-						react.createElement(Card,{suit:suitMap[c.color],rank:rankMap[c.kind]})
+				react.createElement("div",{className:"field"},new Array(this.client.players).fill(0).map((v,i)=>{
+					return react.createElement("div",{className:"player"+(i==(this.client.currentRound&&(this.client.currentRound.startedBy+this.client.currentRound.cards.length)%this.client.players)?" active":"")},
+						(()=>{
+							var games = this.client.games||[];
+							var matchPoints = this.client.calculatePoints(games.slice(0,games.length-1));
+							var gamePoints = this.client.calculatePoints(games.slice(games.length-1));
+							return react.createElement("h1",{},
+								i==this.client.seat?"Ich":"Spieler "+(i+1),
+								react.createElement("br"),
+								matchPoints[i]+" ("+gamePoints[i]+")");
+						})(),
+						(()=>{
+							var card = this.client.currentRound && this.client.currentRound.cards[(this.client.players+i-this.client.currentRound.startedBy)%this.client.players];
+							if(!card) return null;
+							return react.createElement("div",{class:"card"},
+								react.createElement(Card,{suit:suitMap[card.color],rank:rankMap[card.kind]})
+							)
+						})()
 					)
-				)):null
+				}))
 			),
 			this.client.connected?react.createElement("div",{className:"hand"},this.sortCards(this.client.cards).map(c=>
 				react.createElement("div",{className:"card"+(this.selectedCards.includes(c)?" active":""),onClick:this.clickCard.bind(this,c)},
@@ -73,9 +88,9 @@ module.exports = class Game extends react.Component{
 			this.forceUpdate();
 			if(this.selectedCards.length == 3){
 				this.client.passCards(this.selectedCards);
-				this.selectedCards = [];
 			}
 		}else if(this.client.stage == "playing"){
+			this.selectedCards = [];
 			this.client.playCard(card);
 		}
 	}

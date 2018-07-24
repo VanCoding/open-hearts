@@ -26,7 +26,7 @@
 			}
 
 			.field{
-				width: 400px;
+				width: 1000px;
 				height: 400px;
 
 				position:absolute; /*it can be fixed too*/
@@ -42,26 +42,19 @@
 			.field .card{
 				margin-left: 0px;
 			}
-
-			.card.north{
-				position: absolute;
-				top:0px;
-				left:130px;
+			.player{
+				height:200;
+				width:150px;
+				text-align: center;
+				display: inline-block;
+				vertical-align: top;
 			}
-			.card.east{
-				position: absolute;
-				top:90px;
-				left:260px;
+			.player h1{
+				color:white;
+				font-family: sans-serif;
 			}
-			.card.south{
-				position: absolute;
-				top:180px;
-				left:130px;
-			}
-			.card.west{
-				position: absolute;
-				top:90px;
-				left:0px;
+			.player.active h1{
+				color:yellow;
 			}
 
 			.card{
@@ -83,7 +76,8 @@
 				background-color:#eee;
 			}
 			.card.active{
-				margin-top:-30px;
+				position: relative;
+				top:-30px;
 			}
 		</style>
 	</head>

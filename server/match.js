@@ -74,7 +74,8 @@ module.exports = class Match{
 			for(var player of this.players){
 				this.notifyPlayer(player,{
 					event:"exchangedCards",
-					cards:player.cards
+					cards:player.cards,
+					startedBy:this.currentRound.startedBy
 				})
 			}
 		}
@@ -117,7 +118,7 @@ module.exports = class Match{
 					this.games.map(g=>{
 						var playerPoints = this.players.map((p,i)=>
 							g.rounds.filter(r=>r.wonBy==i).map(r=>
-								r.cards.map(c=>c.color=="heart"?1:((c.color=="space"&&c.kind=="queen")?13:0)).reduce((a,b)=>a+b,0)
+								r.cards.map(c=>c.color=="heart"?1:((c.color=="spade"&&c.kind=="queen")?13:0)).reduce((a,b)=>a+b,0)
 							).reduce((a,b)=>a+b,0)
 						);
 						var victoryPlayer = playerPoints.indexOf(26);
