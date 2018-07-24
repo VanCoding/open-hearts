@@ -7,7 +7,10 @@ var upgrade = require("koa-upgrade");
 var browserify = require("browserify");
 var watchify = require("watchify");
 var path = require("path");
+var fs = require("fs");
 var Match = require("./match");
+
+var config = JSON.parse(fs.readFileSync("./config.json")+"");
 
 var build = browserify({cache:{},packageCache:{},entries:[path.resolve(__dirname,"../client/index.js")],plugin:[watchify]});
 var client = "";
@@ -95,4 +98,4 @@ app.use(
 	])
 )
 
-app.listen(80);
+app.listen(config.port);
