@@ -5,7 +5,7 @@ module.exports = class HeartsClient extends EventEmitter{
 	constructor(id){
 		super();
 		this.connected = false;
-		this.connection = new WebSocket((location.protocol=="https:"?"wss":"ws")+"://"+location.hostname+"/api/matches/"+id);
+		this.connection = new WebSocket((location.protocol=="https:"?"wss":"ws")+"://"+location.host+"/api/matches/"+id);
 		this.connection.onmessage = msg=>{
 			var data = JSON.parse(msg.data);
 			switch(data.event){
