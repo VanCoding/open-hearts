@@ -2,6 +2,7 @@ var react = require("react");
 var Client = require("./client");
 var {Card} = require("react-playing-cards");
 var allCards = require("../server/cards");
+var Bot = require("./bot");
 
 var suitMap = {
 	"club":"C",
@@ -31,6 +32,10 @@ module.exports = class Match extends react.Component{
 		this.client = new Client(this.props.id);
 		this.client.on("change",()=>this.forceUpdate());
 		this.selectedCards = [];
+
+		new Bot(this.props.id);
+		new Bot(this.props.id);
+		new Bot(this.props.id);
 	}
 	render(){
 		return react.createElement("div",{className:"game"},
