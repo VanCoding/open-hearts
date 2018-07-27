@@ -6,8 +6,10 @@ module.exports = class HeartsClient extends EventEmitter{
 		super();
 		this.connected = false;
 		this.connection = new WebSocket((location.protocol=="https:"?"wss":"ws")+"://"+location.host+"/api/matches/"+id);
-		this.connection.onmessage = msg=>{
-			var data = JSON.parse(msg.data);
+		this.delay = Promise.resolve(true);
+		this.connection.onmessage = async msg=>{
+			await this.delay;
+			var data = JSON.parse(msg.data);			
 			switch(data.event){
 				case "init":
 					this.connected = true;
@@ -43,6 +45,10 @@ module.exports = class HeartsClient extends EventEmitter{
 						this.cards.splice(index,1);
 					}
 					if(this.currentRound.cards.length == this.players){
+						this.delay = new Promise(s=>setTimeout(s,1000));
+						this.emit("change");
+						await this.delay;
+
 						var startColor = this.currentRound.cards[0].color;
 						var highest = 0;
 						for(var i = 1; i < this.currentRound.cards.length; i++){

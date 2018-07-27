@@ -32,15 +32,11 @@ module.exports = class Match extends react.Component{
 		this.client = new Client(this.props.id);
 		this.client.on("change",()=>this.forceUpdate());
 		this.selectedCards = [];
-
-		new Bot(this.props.id);
-		new Bot(this.props.id);
-		new Bot(this.props.id);
 	}
 	render(){
 		return react.createElement("div",{className:"game"},
 			react.createElement("div",{className:"table"},new Array(this.client.players).fill(0).map((v,i)=>{
-				return react.createElement("div",{className:"player"+(i==(this.client.currentRound&&(this.client.currentRound.startedBy+this.client.currentRound.cards.length)%this.client.players)?" active":"")},
+				return react.createElement("div",{className:"player"+(i==(this.client.currentRound&&(this.client.currentRound.startedBy+this.client.currentRound.cards.length)%this.client.players) && this.client.stage == "playing"?" active":"")},
 					(()=>{
 						var games = this.client.games||[];
 						var matchPoints = this.client.calculatePoints(games.slice(0,games.length-1));
@@ -51,6 +47,7 @@ module.exports = class Match extends react.Component{
 							matchPoints[i]+" ("+gamePoints[i]+")");
 					})(),
 					(()=>{
+						if(this.client.stage != "playing") return null;
 						var card = this.client.currentRound && this.client.currentRound.cards[(this.client.players+i-this.client.currentRound.startedBy)%this.client.players];
 						if(!card) return null;
 						return react.createElement("div",{class:"card"},
