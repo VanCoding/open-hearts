@@ -29,7 +29,7 @@ var matches = {};
 
 var app = new Koa();
 upgrade(app);
-app.use(mount("/public/react-playing-cards",Static("./node_modules/react-playing-cards/lib")))
+app.use(mount("/public/cardsJS",Static("./node_modules/cardsJS/dist")))
 app.use(mount("/public/bootstrap",Static("./node_modules/bootstrap/dist")))
 app.use(mount("/public",Static("./public")));
 app.use(
@@ -57,7 +57,7 @@ app.use(
 			ctx.body =
 `<html>
 	<head>
-		<link rel="stylesheet" href="/public/react-playing-cards/main.css"/>
+		<link rel="stylesheet" href="/public/cardsJS/cards.min.css"/>
 		<link rel="stylesheet" href="/public/match.css"/>
 		<script src="/client.js"></script>
 	</head>

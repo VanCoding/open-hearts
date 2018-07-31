@@ -1,30 +1,8 @@
 var react = require("react");
 var Client = require("./client");
-var {Card} = require("react-playing-cards");
+var Card = require("./card");
 var allCards = require("../server/cards");
 var Bot = require("./bot");
-
-var suitMap = {
-	"club":"C",
-	"diamond":"D",
-	"heart":"H",
-	"spade":"S"
-};
-var rankMap = {
-	"2":"2",
-	"3":"3",
-	"4":"4",
-	"5":"5",
-	"6":"6",
-	"7":"7",
-	"8":"8",
-	"9":"9",
-	"10":"T",
-	"jack":"J",
-	"queen":"Q",
-	"king":"K",
-	"ace":"A"
-}
 
 module.exports = class Match extends react.Component{
 	constructor(p){
@@ -50,18 +28,13 @@ module.exports = class Match extends react.Component{
 						if(this.client.stage != "playing") return null;
 						var card = this.client.currentRound && this.client.currentRound.cards[(this.client.players+i-this.client.currentRound.startedBy)%this.client.players];
 						if(!card) return null;
-						return react.createElement("div",{class:"card"},
-							react.createElement(Card,{suit:suitMap[card.color],rank:rankMap[card.kind]})
-						)
+						return react.createElement(Card,{color:card.color,kind:card.kind});
 					})()
 				)
 			})),
 			this.client.connected?react.createElement("div",{className:"hand"},this.sortCards(this.client.cards).map(c=>
-				react.createElement("div",{className:"card"+(this.selectedCards.includes(c)?" active":""),onClick:this.clickCard.bind(this,c)},
-					react.createElement(Card,{suit:suitMap[c.color],rank:rankMap[c.kind]})
-				)
+				react.createElement(Card,{color:c.color,kind:c.kind,className:(this.selectedCards.includes(c)?"active":""),onClick:this.clickCard.bind(this,c)})
 			)):null,
-
 			this.client.connected?null:"connecting..."
 		)
 	}

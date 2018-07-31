@@ -38,25 +38,16 @@ html,body{
 	color:yellow;
 }
 
-.card{
-	margin-left:-50px;
-	width:128px;
-	height:180px;
-	display: inline-block;
-}
-.card:first-child{
-	margin-left:0px;
-}
-
-.card .rpc__card{
-	transform:scale(0.5);
-	transform-origin: top left;
-}
-
-.card .rpc__card:hover{
-	background-color:#eee;
-}
-.card.active{
+img.card{
 	position: relative;
+	width:150px;
+}
+img.card.active{
 	top:-30px;
+}
+.hand .card{
+	margin-left: -100px;
+}
+.hand .card:first-child{
+	margin-left:0px;
 }
