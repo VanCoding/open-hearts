@@ -12,6 +12,12 @@ module.exports = class MatchList extends react.Component{
 	render(){
 		return react.createElement("div",{className:"container"},
 			react.createElement("h1",{},"Open Hearts"),
+			react.createElement("div",{className:"form-group row"},
+				react.createElement("label",{className:"col-form-label col-sm-4"},"Spielername"),
+				react.createElement("div",{className:"col-sm-8"},
+					react.createElement("input",{className:"form-control",value:localStorage["username"]||"Spieler",onChange:v=>{localStorage["username"] = v.target.value;this.forceUpdate();}})
+				)
+			),
 			react.createElement("h2",{},"Spielliste"),
 			react.createElement("table",{className:"table table-striped table-hover"},
 				react.createElement("thead",{},

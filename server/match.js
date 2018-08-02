@@ -147,42 +147,66 @@ module.exports = class Match extends EventEmitter{
 	}
 
 	takeSeat(connection){
-		var seat = this.players.findIndex(p=>!p.connection);
-		if(seat < 0){
-			connection.send(JSON.stringify({event:"error",message:"game is full"}));
-			connection.close();
-			return;
-		}
-		this.players[seat].connection = connection;
-		connection.on("close",()=>{
-			delete this.players[seat].connection;
-			if(!this.players.filter(p=>p.connection).length) this.emit("close");
-		})
-		connection.on("message",msg=>{
-			try{
-				msg = JSON.parse(msg);
-				switch(msg.action){
-					case "passCards":
-						if(!(msg.cards instanceof Array)) throw new Error("cards must be an array");
-						this.passCards(seat,msg.cards.map(this.mapCard.bind(this)));
-						break;
-					case "playCard":
-						this.playCard(seat,this.mapCard(msg.card));
-						break;
-					default:
-						throw new Error("unknown action");
-				}
-			}catch(e){
-				connection.send(JSON.stringify({event:"error",message:e.message}));
+		connection.once("message",msg=>{
+			msg = JSON.parse(msg);
+			if(msg.action != "takeSeat"){
+				connection.send(JSON.stringify({event:"error",message:"must take seat at first"}));
+				connection.close();
 			}
-		})
-		this.notifyPlayer(this.players[seat],{
-			event:"init",
-			seat:seat,
-			stage:this.stage,
-			cards:this.players[seat].cards,
-			games:this.games,
-			players:this.players.length
+			if(typeof msg.username != "string" || msg.username.length < 1 || msg.username.length > 50){
+				connection.send(JSON.stringify({event:"error",message:"username must be a string of length 1-50"}));
+				connection.close();
+			}
+			var seat = this.players.findIndex(p=>!p.connection);
+			if(seat < 0){
+				connection.send(JSON.stringify({event:"error",message:"game is full"}));
+				connection.close();
+				return;
+			}
+
+			this.players[seat].username = msg.username;
+			this.notifyPlayers({
+				event:"seatTaken",
+				seat:seat,
+				username:msg.username
+			});
+			this.players[seat].connection = connection;
+			connection.on("close",()=>{
+				delete this.players[seat].connection;
+				delete this.players[seat].username;
+				this.notifyPlayers({
+					event:"seatLeft",
+					seat:seat
+				});
+				if(!this.players.filter(p=>p.connection).length) this.emit("close");
+			})
+			connection.on("message",msg=>{
+				try{
+					msg = JSON.parse(msg);
+					switch(msg.action){
+						case "passCards":
+							if(!(msg.cards instanceof Array)) throw new Error("cards must be an array");
+							this.passCards(seat,msg.cards.map(this.mapCard.bind(this)));
+							break;
+						case "playCard":
+							this.playCard(seat,this.mapCard(msg.card));
+							break;
+						default:
+							throw new Error("unknown action");
+					}
+				}catch(e){
+					connection.send(JSON.stringify({event:"error",message:e.message}));
+				}
+			})
+			this.notifyPlayer(this.players[seat],{
+				event:"init",
+				seat:seat,
+				stage:this.stage,
+				cards:this.players[seat].cards,
+				games:this.games,
+				players:this.players.length,
+				usernames:this.players.map(u=>u.username)
+			});
 		});
 	}
 

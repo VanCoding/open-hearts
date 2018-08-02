@@ -7,7 +7,7 @@ var Bot = require("./bot");
 module.exports = class Match extends react.Component{
 	constructor(p){
 		super(p);
-		this.client = new Client(this.props.id);
+		this.client = new Client(this.props.id,localStorage["username"]||"Spieler");
 		this.client.on("change",()=>this.forceUpdate());
 		this.selectedCards = [];
 	}
@@ -16,11 +16,12 @@ module.exports = class Match extends react.Component{
 			react.createElement("div",{className:"table"},new Array(this.client.players).fill(0).map((v,i)=>{
 				return react.createElement("div",{className:"player"+(i==(this.client.currentRound&&(this.client.currentRound.startedBy+this.client.currentRound.cards.length)%this.client.players) && this.client.stage == "playing"?" active":"")},
 					(()=>{
+						if(!this.client.connected) return null;
 						var games = this.client.games||[];
 						var matchPoints = this.client.calculatePoints(games.slice(0,games.length-1));
 						var gamePoints = this.client.calculatePoints(games.slice(games.length-1));
 						return react.createElement("h1",{},
-							i==this.client.seat?"Ich":"Spieler "+(i+1),
+							(i+1)+": "+(this.client.usernames[i]||""),
 							react.createElement("br"),
 							matchPoints[i]+" ("+gamePoints[i]+")");
 					})(),

@@ -2,20 +2,24 @@ var EventEmitter = require("events").EventEmitter;
 var allCards = require("../server/cards");
 
 module.exports = class HeartsClient extends EventEmitter{
-	constructor(id){
+	constructor(id,username){
 		super();
 		this.connected = false;
 		this.connection = new WebSocket((location.protocol=="https:"?"wss":"ws")+"://"+location.host+"/api/matches/"+id);
 		this.delay = Promise.resolve(true);
+		this.connection.onopen = ()=>{
+			this.connection.send(JSON.stringify({action:"takeSeat",username:username}));
+		}
 		this.connection.onmessage = async msg=>{
 			await this.delay;
-			var data = JSON.parse(msg.data);			
+			var data = JSON.parse(msg.data);
 			switch(data.event){
 				case "init":
 					this.connected = true;
 					this.seat = data.seat;
 					this.stage = data.stage;
 					this.players = data.players;
+					this.usernames = data.usernames;
 					this.cards = data.cards;
 					this.games = data.games;
 					this.currentGame = this.games[this.games.length-1];
@@ -71,6 +75,14 @@ module.exports = class HeartsClient extends EventEmitter{
 							});
 						}
 					}
+					this.emit("change");
+					break;
+				case "seatTaken":
+					this.usernames[data.seat] = data.username;
+					this.emit("change");
+					break;
+				case "seatLeft":
+					this.usernames[data.seat] = null;
 					this.emit("change");
 					break;
 				case "error":
