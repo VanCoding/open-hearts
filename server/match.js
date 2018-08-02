@@ -28,12 +28,18 @@ module.exports = class Match extends EventEmitter{
 		}
 		this.currentGame = {rounds:[]};
 		this.games.push(this.currentGame);
-		this.stage = "passing";
+		if(this.games.length%this.players.length){
+			this.stage = "playing";
+			this.currentGame.rounds.push(this.currentRound = {startedBy:this.findGameStarter(),cards:[],wonBy:null})
+		}else{
+			this.stage = "passing";
+		}
 
 		for(var player of this.players){
 			this.notifyPlayer(player,{
 				event:"newGame",
-				cards:player.cards
+				cards:player.cards,
+				startedBy: this.stage=="playing"?this.currentRound.startedBy:undefined
 			});
 		}
 	}
@@ -58,14 +64,11 @@ module.exports = class Match extends EventEmitter{
 					passingPlayer.cards.splice(passingPlayer.cards.indexOf(card),1);
 					receivingPlayer.cards.push(card);
 				}
-				if(receivingPlayer.cards.includes(beginningCard)){
-					var gameStarter = this.players.indexOf(receivingPlayer);
-				}
 				delete passingPlayer.passedCards;
 			}
 
 			this.currentRound = {
-				startedBy:gameStarter,
+				startedBy:this.findGameStarter(),
 				cards:[],
 				wonBy:null
 			}
@@ -215,6 +218,12 @@ module.exports = class Match extends EventEmitter{
 		card = this.cards.filter(c=>c.color==card.color&&c.kind==card.kind)[0];
 		if(!card) throw new Error("card does not exist");
 		return card;
+	}
+
+	findGameStarter(){
+		for(var i = 0; i < this.players.length; i++){
+			if(this.players[i].cards.filter(c=>c==beginningCard).length) return i;
+		}
 	}
 
 	notifyPlayers(event){

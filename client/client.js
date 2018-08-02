@@ -27,11 +27,16 @@ module.exports = class HeartsClient extends EventEmitter{
 					this.emit("change");
 					break;
 				case "newGame":
-					this.stage = "passing";
 					this.cards = data.cards;
 					this.games.push(this.currentGame = {
 						rounds:[]
 					})
+					if(data.startedBy){
+						this.stage = "playing";
+						this.currentGame.rounds.push(this.currentRound = {staredBy:data.startedBy,cards:[],wonBy:null});
+					}else{
+						this.stage = "passing";
+					}
 					this.emit("change");
 					break;
 				case "exchangedCards":

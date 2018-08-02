@@ -21,7 +21,7 @@ module.exports = class Match extends react.Component{
 						var matchPoints = this.client.calculatePoints(games.slice(0,games.length-1));
 						var gamePoints = this.client.calculatePoints(games.slice(games.length-1));
 						return react.createElement("h1",{},
-							(i+1)+": "+(this.client.usernames[i]||""),
+							this.renderUsername(i),
 							react.createElement("br"),
 							matchPoints[i]+" ("+gamePoints[i]+")");
 					})(),
@@ -33,11 +33,18 @@ module.exports = class Match extends react.Component{
 					})()
 				)
 			})),
-			this.client.connected?react.createElement("div",{className:"hand"},this.sortCards(this.client.cards).map(c=>
-				react.createElement(Card,{color:c.color,kind:c.kind,className:(this.selectedCards.includes(c)?"active":""),onClick:this.clickCard.bind(this,c)})
-			)):null,
+			this.client.stage=="passing"?react.createElement("h2",{},"3 Karten an "+this.renderUsername((this.client.seat+this.client.games.length)%this.client.players)+" weitergeben"):null,
+			this.client.connected?react.createElement("div",{className:"hand"},
+				this.sortCards(this.client.cards).map(c=>
+					react.createElement(Card,{color:c.color,kind:c.kind,className:(this.selectedCards.includes(c)?"active":""),onClick:this.clickCard.bind(this,c)})
+				)
+			):null,
 			this.client.connected?null:"connecting..."
 		)
+	}
+
+	renderUsername(user){
+		return (user+1)+": "+(this.client.usernames[user]||"")
 	}
 
 	sortCards(cards){
